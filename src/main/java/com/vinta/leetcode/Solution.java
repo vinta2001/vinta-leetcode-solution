@@ -4,6 +4,35 @@ import java.util.*;
 
 public class Solution {
 
+    /**
+     * @param s
+     * @return
+     * @titile 无重复字符的最长子串
+     * @leetcode 3
+     */
+    public int lengthOfLongestSubstring(String s) {
+        int res = 0;
+        int l = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        char[] chars = s.toCharArray();
+        for (int r = 0; r < chars.length; r++) {
+            if (map.containsKey(chars[r])) {
+                // 取最大的位置，防止重复的字符在考前的位置
+                // s = "abba"时的第2个"a"
+                l = Math.max(map.get(chars[r]) + 1, l);
+            }
+            map.put(chars[r], r);
+            res = Math.max(res, r - l + 1);
+        }
+        return res;
+    }
+
+    /**
+     * @param height
+     * @return
+     * @title 接雨水
+     * @leetcode 42
+     */
     public int trap(int[] height) {
         int left = 0, leftMax = 0;
         int right = height.length - 1, rightMax = 0;
@@ -28,6 +57,12 @@ public class Solution {
         return res;
     }
 
+    /**
+     * @param nums
+     * @return
+     * @title 三数之和
+     * @leetcode 15
+     */
     public List<List<Integer>> threeSum(int[] nums) {
         int len = nums.length;
         Arrays.sort(nums);
@@ -51,6 +86,12 @@ public class Solution {
         return res;
     }
 
+    /**
+     * 盛水最多的容器 leetcode-11
+     *
+     * @param height
+     * @return
+     */
     public int maxArea(int[] height) {
         int lid = 0, rid = height.length - 1;
         int res = 0;
@@ -66,6 +107,11 @@ public class Solution {
         return res;
     }
 
+    /**
+     * @param nums
+     * @title 移动零
+     * @leetcode 283
+     */
     public void moveZeroes(int[] nums) {
         int ptr = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -79,6 +125,12 @@ public class Solution {
 
     }
 
+    /**
+     * @param nums
+     * @return
+     * @title 最长连续序列
+     * @leetcode 128
+     */
     public int longestConsecutive(int[] nums) {
         int ans = 0;
         Set<Integer> set = new HashSet<>();
@@ -98,6 +150,12 @@ public class Solution {
         return ans;
     }
 
+    /**
+     * @param strs
+     * @return
+     * @title 字母异位词分组
+     * @leetcode 49
+     */
     public List<List<String>> groupAnagrams(String[] strs) {
         Map<String, List<String>> record = new HashMap<>();
         for (String str : strs) {
@@ -111,6 +169,13 @@ public class Solution {
         return new ArrayList<>(record.values());
     }
 
+    /**
+     * @param nums
+     * @param target
+     * @return
+     * @title 两数之和
+     * @leetcode 1
+     */
     public int[] twoSum(int[] nums, int target) {
         Map<Integer, Integer> map = new HashMap<>();
         int[] res = new int[2];
