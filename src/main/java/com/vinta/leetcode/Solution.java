@@ -5,6 +5,64 @@ import java.util.*;
 public class Solution {
 
     /**
+     * @param nums
+     * @param k
+     * @return
+     * @leetcode 239
+     * @title 滑动窗口最大值
+     */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+
+        return null;
+    }
+
+    public int subarraySum(int[] nums, int k) {
+        // 前i个数字的前缀和 prefix[i]（当前前缀和）
+        // prefix[i] - prefix[j] = k; (j < i, prefix[j] < prefix[i])
+        // prefix[j]=prefix[i]-k;
+
+        // map记录前缀和的个数
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        int res = 0;
+        int prefix = 0;
+        for (int num : nums) {
+            prefix += num;
+            res += map.getOrDefault(prefix - k, 0);
+            map.merge(prefix, 1, Integer::sum);  //map[prefix]++;
+        }
+        return res;
+    }
+
+
+    /**
+     * @param s
+     * @param p
+     * @return
+     * @title 找到字符串中所有字母异位词
+     * @leetcode 438
+     */
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> res = new ArrayList<>();
+        int[] ch1 = new int[26];
+        int[] ch2 = new int[26];
+        for (char c : p.toCharArray()) {
+            ch1[c - 'a']++;
+        }
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < s.length(); i++) {
+            ch2[chars[i] - 'a']++;
+            int j = i + 1 - p.length();
+            if (j < 0) continue;
+            if (Arrays.equals(ch1, ch2)) {
+                res.add(j);
+            }
+            ch2[chars[j] - 'a']--;
+        }
+        return res;
+    }
+
+    /**
      * @param s
      * @return
      * @titile 无重复字符的最长子串
