@@ -5,6 +5,84 @@ import java.util.*;
 public class Solution {
 
     /**
+     * @param intervals
+     * @return
+     * @content 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。
+     * 请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+     * 示例 1：
+     * 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+     * 输出：[[1,6],[8,10],[15,18]]
+     * 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+     * 示例 2：
+     * 输入：intervals = [[1,4],[4,5]]
+     * 输出：[[1,5]]
+     * 解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+     * @url <a href="https://leetcode.cn/problems/merge-intervals/description/?envType=study-plan-v2&envId=top-100-liked">56. 合并区间</a>
+     */
+    public int[][] merge(int[][] intervals) {
+
+    }
+
+    /**
+     * @param nums
+     * @return
+     * @content 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+     * 输出：6
+     * 解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+     * @url <a href="https://leetcode.cn/problems/maximum-subarray/description/?envType=study-plan-v2&envId=top-100-liked">53. 最大子数组和</a>
+     */
+    public int maxSubArray(int[] nums) {
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 0) return 0;
+        int sum = Integer.MIN_VALUE / 2;
+        int maxSum = Integer.MIN_VALUE / 2;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            sum = Math.max(sum, nums[i]);
+            maxSum = Math.max(maxSum, sum);
+        }
+        return maxSum;
+    }
+
+    /**
+     * @param s
+     * @param t
+     * @return
+     * @url <a href="https://leetcode.cn/problems/minimum-window-substring/description/?envType=study-plan-v2&envId=top-100-liked">76.最小覆盖子串</a>
+     */
+    public String minWindow(String s, String t) {
+        int[] cntT = new int[128];
+        int[] cntS = new int[128];
+        int lessCnt = 0; // 字符个数，不计次数，在后面的过程中处理
+        for (char c : t.toCharArray()) {
+            if (cntT[c]++ == 0) { // 先比较，再递增
+                lessCnt++;
+            }
+        }
+        int len = s.length();
+        int ansL = -1, ansR = len;
+        int left = 0;
+        char[] chars = s.toCharArray();
+        for (int right = 0; right < len; right++) {
+            char c = chars[right];
+            if (++cntS[c] == cntT[c]) {  // 如果出现次数相同，则去掉该字母，表示被覆盖
+                lessCnt--;
+            }
+            while (lessCnt == 0) {
+                if ((right - left) < (ansR - ansL)) {
+                    ansR = right;
+                    ansL = left;
+                }
+                char x = chars[left++];
+                if (cntS[x]-- == cntT[x]) {  // 数量减到相同，则表示还有字符没有被覆盖
+                    lessCnt++;
+                }
+            }
+        }
+        return ansL < 0 ? "" : s.substring(ansL, ansR + 1);
+    }
+
+    /**
      * @param nums
      * @param k
      * @return
@@ -12,10 +90,38 @@ public class Solution {
      * @title 滑动窗口最大值
      */
     public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] res = new int[nums.length - (k - 1)]; //从第k个开始有窗口，第k个下标是k-1
+        //维护一个单调递减队，一边弹出，一边压入，单调队列里面可以存下标也可以存数组中的值
 
-        return null;
+        /**
+         * 单调队列的原则：如果新值与队列不单调，则弹出小的值；如果新值与队列单调，则直接加入
+         */
+
+        // 这里存入的是下标，便于记录窗口
+        Deque<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < nums.length; i++) {
+            while (!queue.isEmpty() && nums[queue.getLast()] <= nums[i]) {
+                queue.removeLast();
+            }
+            queue.addLast(i);
+
+            int left = i - k + 1;
+            if (queue.getFirst() < left) {
+                queue.removeFirst();
+            }
+            if (left >= 0) {
+                res[left] = nums[queue.getFirst()];
+            }
+        }
+        return res;
     }
 
+    /**
+     * @param nums
+     * @param k
+     * @return
+     * @url <a href="https://leetcode.cn/problems/subarray-sum-equals-k/?envType=study-plan-v2&envId=top-100-liked">560.和为 K 的子数组</a>
+     */
     public int subarraySum(int[] nums, int k) {
         // 前i个数字的前缀和 prefix[i]（当前前缀和）
         // prefix[i] - prefix[j] = k; (j < i, prefix[j] < prefix[i])
