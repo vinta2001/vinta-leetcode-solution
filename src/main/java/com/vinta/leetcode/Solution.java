@@ -5,28 +5,233 @@ import java.util.*;
 public class Solution {
 
     /**
-     * @param intervals
-     * @return
-     * @content 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。
-     * 请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
-     * 示例 1：
-     * 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
-     * 输出：[[1,6],[8,10],[15,18]]
-     * 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
-     * 示例 2：
-     * 输入：intervals = [[1,4],[4,5]]
-     * 输出：[[1,5]]
-     * 解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
-     * @url <a href="https://leetcode.cn/problems/merge-intervals/description/?envType=study-plan-v2&envId=top-100-liked">56. 合并区间</a>
+     * @param matrix
+     * @describe 给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+     * 你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+     * @example1 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+     * 输出：[[7,4,1],[8,5,2],[9,6,3]]
+     * @url <a href="https://leetcode.cn/problems/rotate-image/description/?envType=study-plan-v2&envId=top-100-liked">48. 旋转图像</a>
      */
-    public int[][] merge(int[][] intervals) {
+    public void rotate(int[][] matrix) {
+        // j < i 且 matrix[i][j] <=> matrix[j][i] => 左下角和右上角交换元素
+        // j < n - 1 - i 且 matrix[i][j] <=> matrix[j][i] => 左上角和右下角交换元素
+        // j < n / 2 且 matrix[i][j] <=> matrix[i][n-1-j] => 左右交换元素
+        // i < n / 2 且 matrix[i][j] <=> matrix[n-1-i][j] => 上下交换元素
+        int n = matrix.length;
 
+        // 交换左下与右上
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        // 交换左右
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][n - 1 - j];
+                matrix[i][n - 1 - j] = temp;
+            }
+        }
+
+    }
+
+    /**
+     * @param matrix
+     * @return
+     * @describe 给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+     * @example1 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+     * 输出：[1,2,3,6,9,8,7,4,5]
+     * @url <a href="https://leetcode.cn/problems/spiral-matrix/description/?envType=study-plan-v2&envId=top-100-liked">54. 螺旋矩阵</a>
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> res = new ArrayList<>();
+        int top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;
+
+        while (true) {
+            for (int i = left; i <= right; i++) res.add(matrix[top][i]);  //从左到右
+            if (++top > bottom) break;
+            for (int i = top; i <= bottom; i++) res.add(matrix[i][right]); //从上到下
+            if (--right < left) break;
+            for (int i = right; i >= left; i--) res.add(matrix[bottom][i]); //从右到左
+            if (--bottom < top) break;
+            for (int i = bottom; i >= top; i--) res.add(matrix[i][left]); //从下到上
+            if (++left > right) break;
+        }
+        return res;
+    }
+
+    /**
+     * @param matrix
+     * @describe 给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
+     * @example1 输入：matrix =
+     * [[1,1,1],
+     * [1,0,1],
+     * [1,1,1]]
+     * 输出：
+     * [[1,0,1],
+     * [0,0,0],
+     * [1,0,1]]
+     * @url <a href="https://leetcode.cn/problems/set-matrix-zeroes/?envType=study-plan-v2&envId=top-100-liked">73. 矩阵置零</a>
+     */
+    public void setZeroes(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        boolean[] rows = new boolean[m];
+        boolean[] cols = new boolean[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    rows[i] = true;
+                    cols[j] = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (cols[j] || rows[i]) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
     }
 
     /**
      * @param nums
      * @return
-     * @content 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+     * @describe 给你一个未排序的整数数组 nums ，请你找出其中没有出现的最小的正整数。
+     * 请你实现时间复杂度为 O(n) 并且只使用常数级别额外空间的解决方案。
+     * @example1： 输入：nums = [1,2,0]
+     * 输出：3
+     * 解释：范围 [1,2] 中的数字都在数组中。
+     * @example2： 输入：nums = [3,4,-1,1]
+     * 输出：2
+     * 解释：1 在数组中，但 2 没有。
+     * @example3： 输入：nums = [7,8,9,11,12]
+     * 输出：1
+     * 解释：最小的正数 1 没有出现。
+     * @url <a href="https://leetcode.cn/problems/first-missing-positive/description/?envType=study-plan-v2&envId=top-100-liked">41. 缺失的第一个正数</a>
+     */
+    public int firstMissingPositive(int[] nums) {
+        int len = nums.length;
+        int[] existing = new int[len + 1]; //保存 [0,len] 区间的正数
+        for (int num : nums) {
+            if (num >= 0 && num <= len) {
+                existing[num]++;
+            }
+        }
+        for (int i = 1; i < existing.length; i++) {
+            if (existing[i] == 0) {
+                return i;
+            }
+        }
+        return existing.length; //如果[0,len]区间的数都在，那么就是len+1不存在
+    }
+
+    /**
+     * @param nums
+     * @return
+     * @describe 给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+     * 题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+     * 请 不要使用除法，且在 O(n) 时间复杂度内完成此题。
+     * @example1: 输入: nums = [1,2,3,4]
+     * 输出: [24,12,8,6]
+     * @example2: 输入: nums = [-1,1,0,-3,3]
+     * 输出: [0,0,9,0,0]
+     * @url <a href="https://leetcode.cn/problems/product-of-array-except-self/description/?envType=study-plan-v2&envId=top-100-liked">238. 除自身以外数组的乘积</a>
+     */
+
+    public int[] productExceptSelf(int[] nums) {
+        int len = nums.length;
+        int[] res = new int[len];
+        Arrays.fill(res, 1);
+
+        for (int i = 1; i < len; i++) {
+            res[i] = res[i - 1] * nums[i - 1];  // res[i]表示除nums[i]以外的乘积
+        }
+
+        int suf = 1;
+        for (int i = len - 1; i >= 0; i--) {
+            res[i] *= suf;   // 先乘suf，表示在乘nums[i]之前就完成乘积，所以没有乘nums[i]
+            suf *= nums[i];
+        }
+
+        return res;
+    }
+
+    /**
+     * @param nums
+     * @param k
+     * @describe 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+     * @example1: 输入: nums = [1,2,3,4,5,6,7], k = 3
+     * 输出: [5,6,7,1,2,3,4]
+     * 解释:
+     * 向右轮转 1 步: [7,1,2,3,4,5,6]
+     * 向右轮转 2 步: [6,7,1,2,3,4,5]
+     * 向右轮转 3 步: [5,6,7,1,2,3,4]
+     * @example2: 输入：nums = [-1,-100,3,99], k = 2
+     * 输出：[3,99,-1,-100]
+     * 解释:
+     * 向右轮转 1 步: [99,-1,-100,3]
+     * 向右轮转 2 步: [3,99,-1,-100]
+     * @url <a href="https://leetcode.cn/problems/rotate-array/description/?envType=study-plan-v2&envId=top-100-liked">189. 轮转数组</a>
+     */
+    public void rotate(int[] nums, int k) {
+        int len = nums.length;
+        k %= len; // k % len
+        if (len < k) return;
+        rotateHelp(nums, 0, len - 1);
+        rotateHelp(nums, 0, k - 1);
+        rotateHelp(nums, k, len - 1);
+    }
+
+    public void rotateHelp(int[] nums, int s, int e) {
+        while (s < e) {
+            int temp = nums[s];
+            nums[s] = nums[e];
+            nums[e] = temp;
+            s++;
+            e--;
+        }
+    }
+
+    /**
+     * @param intervals
+     * @return
+     * @describe 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。
+     * 请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+     * @example1 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+     * 输出：[[1,6],[8,10],[15,18]]
+     * 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+     * @example2 输入：intervals = [[1,4],[4,5]]
+     * 输出：[[1,5]]
+     * 解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+     * @url <a href="https://leetcode.cn/problems/merge-intervals/description/?envType=study-plan-v2&envId=top-100-liked">56. 合并区间</a>
+     */
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        LinkedList<int[]> res = new LinkedList<>();
+        res.add(intervals[0]);
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] <= res.getLast()[1]) {
+                res.getLast()[1] = Math.max(intervals[i][1], res.getLast()[1]);
+            } else {
+                res.add(intervals[i]);
+            }
+        }
+        return res.toArray(new int[0][]);
+    }
+
+    /**
+     * @param nums
+     * @return
+     * @describe 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+     * <p>
+     * 子数组是数组中的一个连续部分。
+     * @excample1 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
      * 输出：6
      * 解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
      * @url <a href="https://leetcode.cn/problems/maximum-subarray/description/?envType=study-plan-v2&envId=top-100-liked">53. 最大子数组和</a>
@@ -48,6 +253,16 @@ public class Solution {
      * @param s
      * @param t
      * @return
+     * @describe 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+     * 注意：
+     * 对于 t 中重复字符，我们寻找的子字符串中该字符数量必须不少于 t 中该字符数量。
+     * 如果 s 中存在这样的子串，我们保证它是唯一的答案。
+     * @example1 输入：s = "ADOBECODEBANC", t = "ABC"
+     * 输出："BANC"
+     * 解释：最小覆盖子串 "BANC" 包含来自字符串 t 的 'A'、'B' 和 'C'。
+     * @example2 输入：s = "a", t = "a"
+     * 输出："a"
+     * 解释：整个字符串 s 是最小覆盖子串。
      * @url <a href="https://leetcode.cn/problems/minimum-window-substring/description/?envType=study-plan-v2&envId=top-100-liked">76.最小覆盖子串</a>
      */
     public String minWindow(String s, String t) {
