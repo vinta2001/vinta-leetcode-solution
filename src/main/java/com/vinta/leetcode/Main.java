@@ -9,12 +9,14 @@ public class Main {
     public static void main(String[] args) {
 
         Solution solution = new Solution();
-        int[][] nums = {{1,2,3},{4,5,6},{7,8,9}};
+        int[][] nums = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        int[] nums1 = {0};
+        int[] nums2 = {};
         int k = 5;
         String s = "abba";
-//        SolutionUtils.printResult(solution.firstMissingPositive(nums));
-        solution.rotate(nums);
-        SolutionUtils.printResult(nums);
+        ListNode list1 = SolutionUtils.createListNode(new int[]{1, 2, 3, 4, 5});
+        ListNode listNode = solution.reverseKGroup(list1, 2);
+        SolutionUtils.printResult(listNode);
     }
 }
 

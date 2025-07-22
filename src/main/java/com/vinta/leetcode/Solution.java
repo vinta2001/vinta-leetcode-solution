@@ -4,6 +4,183 @@ import java.util.*;
 
 public class Solution {
 
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode tail = head;
+        for (int i = 0; i < k; i++) {
+            if (tail == null) {
+                return head;
+            }
+            tail = tail.next;
+        }
+        ListNode pre = null;
+        ListNode cur = head;
+        while (cur != tail) {
+            ListNode next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+        }
+        head.next = reverseKGroup(tail, k);
+        return pre;
+    }
+
+    public ListNode swapPairs(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode cur = dummy;
+        while (head != null && head.next != null) {
+            ListNode next = head.next;
+            head.next = next.next;
+            next.next = head;
+            cur.next = next;
+            cur = head;
+            head = head.next;
+        }
+
+        return dummy.next;
+    }
+
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode fast = dummy;
+        ListNode slow = dummy;
+        while (n-- > 0) {
+            fast = fast.next;
+        }
+
+        while (fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        slow.next = slow.next.next;
+
+        return dummy.next;
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        int sum = 0;
+        while (l1 != null || l2 != null) {
+            int x = l1 == null ? 0 : l1.val;
+            int y = l2 == null ? 0 : l2.val;
+            sum += x + y;
+            cur.next = new ListNode(sum % 10);
+            sum /= 10;
+            l1 = l1 == null ? null : l1.next;
+            l2 = l2 == null ? null : l2.next;
+            cur = cur.next;
+        }
+        if (sum > 0) {
+            cur.next = new ListNode(sum);
+        }
+        return dummy.next;
+    }
+
+    public int maxN(int[] digits, int n) {
+        Arrays.sort(digits);
+        String str = n + "";
+        // 从最高位开始寻找小于等于当前位的数
+        boolean less = false;
+        int res = 0;
+        for (int i = 0; i < str.length(); i++) {
+            int num = str.charAt(i) - '0';
+            if (less) {
+                res = res * 10 + (digits[digits.length - 1]);
+                continue;
+            }
+            // 二分寻找小于等于num的第一个数
+            int r = binarySearch(digits, num, i < str.length() - 1 ? str.charAt(i + 1) - '0' : digits[0]);
+            // 1. 存在小于当前位的数,后续位之间取最大值
+            if (r < num) {
+                res = res * 10 + r;
+                less = true;
+            }
+            // 2. 存在等于当前位的数,继续寻找小于后续位的数
+            else if (r == num) {
+                res = res * 10 + r;
+            }
+            // 3. 不存在小于当前位的数,返回-1
+            else return -1;
+        }
+        return res;
+    }
+
+    // 返回小于等于target的第一个数
+    public int binarySearch(int[] digits, int target, int next) {
+        // 如果下一个数比digits数组中任何一个数都要小,那么当前target只能找小于的数,不能找等于的数
+        if (next < digits[0]) target--;
+        int b = 0, e = digits.length - 1;
+        while (b <= e) {
+            int m = (b + e) >> 1;
+            if (e - b <= 1) { // b = e-1 会一直重复 b = m
+                if (digits[e] <= target) return digits[e];
+                return digits[b];
+            } else if (digits[m] == target) return target;
+            else if (digits[m] > target) e = m - 1;
+            else if (digits[m] < target) {
+                b = m;
+            }
+        }
+        return digits[b];
+    }
+
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int p1 = m - 1, p2 = n - 1, p = m + n - 1;
+        while (p1 >= 0 && p2 >= 0) {
+            if (nums1[p1] < nums2[p2]) {
+                nums1[p] = nums2[p2];
+                p--;
+                p2--;
+            } else {
+                nums1[p] = nums1[p1];
+                p--;
+                p1--;
+            }
+        }
+    }
+
+    /**
+     * @param list1
+     * @param list2
+     * @return
+     * @describe 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+     * @example1 输入：l1 = [1,2,4], l2 = [1,3,4]
+     * 输出：[1,1,2,3,4,4]
+     * @url <a href="https://leetcode.cn/problems/merge-two-sorted-lists/description/?envType=study-plan-v2&envId=top-100-liked">21. 合并两个有序链表</a>
+     */
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) return list2;
+        if (list2 == null) return list1;
+        // if(list1.val > list2.val){
+        //      list2.next = mergeTwoLists(list1,list2.next);
+        //      return list2;
+        // }else{
+        //     list1.next = mergeTwoLists(list1.next,list2);
+        //      return list1;
+        // }
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        while (list1 != null && list2 != null) {
+            if (list1.val < list2.val) {
+                cur.next = list1;
+                list1 = list1.next;
+            } else {
+                cur.next = list2;
+                list2 = list2.next;
+            }
+            cur = cur.next;
+        }
+        if (list1 != null) {
+            cur.next = list1;
+        }
+        if (list2 != null) {
+            cur.next = list2;
+        }
+        return dummy.next;
+    }
+
     /**
      * @param matrix
      * @describe 给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。

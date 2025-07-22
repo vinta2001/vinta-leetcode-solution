@@ -81,10 +81,14 @@ public class SolutionUtils {
     }
 
     public static void printResult(ListNode head) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
         while (head != null) {
-            System.out.print(head.val + " -> ");
+            sb.append(head.val).append(",");
             head = head.next;
         }
-        System.out.println("null");
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(']');
+        System.out.println(sb);
     }
 }
