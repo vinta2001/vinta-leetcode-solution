@@ -4,6 +4,136 @@ import java.util.*;
 
 public class Solution {
 
+    public ListNode rotateRight(ListNode head, int k) {
+        ListNode fast = head;
+        while (k-- > 0) {
+            fast = fast.next;
+        }
+        ListNode slow = head;
+        while (fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        ListNode newHead = slow.next;
+        slow.next = null;
+        fast.next = head;
+        return newHead;
+    }
+
+    private int diameterOfBinaryTreeRes = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null)
+            return 0;
+        diameterOfBinaryTreeHelper(root);
+        return diameterOfBinaryTreeRes;
+    }
+
+    private int diameterOfBinaryTreeHelper(TreeNode root) {
+        if (root == null)
+            return -1;
+        int left = diameterOfBinaryTreeHelper(root.left) + 1;
+        int right = diameterOfBinaryTreeHelper(root.right) + 1;
+        diameterOfBinaryTreeRes = Math.max(diameterOfBinaryTreeRes, left + right);
+        return Math.max(left, right);
+    }
+
+    public boolean isSymmetric(TreeNode root) {
+        Deque<TreeNode> deque = new LinkedList<>();
+        deque.offerFirst(root.left);
+        deque.offerLast(root.right);
+        while (!deque.isEmpty()) {
+            TreeNode left = deque.pollFirst();
+            TreeNode right = deque.pollLast();
+            if (right == null && left == null) {
+                continue;
+            }
+            if (left == null || right == null || right.val != left.val) {
+                return false;
+            }
+
+            deque.offerFirst(left.left);
+            deque.offerFirst(left.right);
+            deque.offerLast(right.right);
+            deque.offerLast(right.left);
+        }
+        return true;
+    }
+
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode cur = dummy;
+        while (cur.next != null && cur.next.next != null) {
+            int val = cur.next.val;   // 记录next.val，用后面的一直比较
+            if (cur.next.next.val == val) { // 如果发生重复，则跳过重复的值
+                while (cur.next != null && cur.next.val == val) {
+                    cur.next = cur.next.next;
+                }
+            } else {
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+
+    public ListNode deleteDuplicates1(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        while (head != null) {
+            if (cur.val != head.val) {
+                cur.next = head;
+                cur = cur.next;
+            }
+            head = head.next;
+        }
+        return dummy.next;
+    }
+
+    public ListNode mergeKLists(ListNode[] lists) {
+
+        return mergeKListsHelp(lists, 0, lists.length - 1);
+    }
+
+    private ListNode mergeKListsHelp(ListNode[] lists, int i, int j) {
+        if (i == j) return lists[i];
+        if (i > j) return null;
+        int mid = (i + j) >> 1;
+        ListNode left = mergeKListsHelp(lists, i, mid);
+        ListNode right = mergeKListsHelp(lists, mid + 1, j);
+        return sortListHelp(left, right);
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) return head; // 递归结束，只有一个元素或一个元素都没有
+        ListNode fast = head;
+        ListNode slow = head;
+        ListNode pre = head;
+        while (fast != null && fast.next != null) {
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        pre.next = null;
+        ListNode left = sortList(head);
+        ListNode right = sortList(slow);
+
+        return sortListHelp(left, right);
+    }
+
+    private ListNode sortListHelp(ListNode list1, ListNode list2) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        if (list1 == null) return list2;
+        if (list2 == null) return list1;
+        if (list1.val < list2.val) {
+            list1.next = sortListHelp(list1.next, list2);
+            return list1;
+        } else {
+            list2.next = sortListHelp(list1, list2.next);
+            return list2;
+        }
+    }
+
     public ListNode reverseKGroup(ListNode head, int k) {
         ListNode tail = head;
         for (int i = 0; i < k; i++) {
@@ -795,7 +925,7 @@ public class Solution {
                 }
 
                 // 2. 更新答案
-                // 如果没有超出 targetCnt 的单词，那么也不会有少于 targetCnt 的单词
+                // 如果不是使用overload变量保存数量就需要遍历来确定是否数量一致
                 if (overload == 0) {
                     ans.add(left);
                 }
