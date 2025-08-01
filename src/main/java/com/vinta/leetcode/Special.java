@@ -5,11 +5,11 @@ import java.util.stream.Collectors;
 
 public class Special {
     public static void main(String[] args) {
-//        System.out.println(maxN(new int[]{1, 2, 4, 9}, 2533));
-        System.out.println(stringNumberAdd("1", "99"));
-        System.out.println(mostCountLetter("abbba"));
-        System.out.println(intersection(new int[]{1, 3, 5, 7, 9, 11}, new int[]{2, 3, 5, 7, 11}));
-        System.out.println(KthListNode(SolutionUtils.createListNode(new Integer[]{1, 2}), 2));
+        System.out.println(maxN(new int[]{1, 2, 4, 9}, 2533));
+//        System.out.println(stringNumberAdd("1", "99"))r;
+//        System.out.println(mostCountLetter("abbba"));
+//        System.out.println(intersection(new int[]{1, 3, 5, 7, 9, 11}, new int[]{2, 3, 5, 7, 11}));
+//        System.out.println(KthListNode(SolutionUtils.createListNode(new Integer[]{1, 2}), 2));
     }
 
     /**
@@ -21,44 +21,88 @@ public class Special {
      */
     public static int maxN(int[] digits, int n) {
         int res = 0;
+        boolean less = false;
         Arrays.sort(digits);
         String s = String.valueOf(n);
-        boolean less = false;
         for (int i = 0; i < s.length(); i++) {
+            int target = s.charAt(i) - '0';
             if (less) {
-                res = res * 10 + digits[digits.length - 1];
+                res = res * 10 + target;
                 continue;
             }
-            int target = s.charAt(i) - '0';
-            int num = binarySearch(digits, target, i < s.length() - 1 ? s.charAt(i + 1) - '0' : digits[0]);
+            int num = binarySearch(digits, target, i + 1 < s.length() ? s.charAt(i) - '0' : digits[0]);
             if (num < target) {
                 res = res * 10 + num;
                 less = true;
-            } else if (num == target) {
+            }else if(num==target) {
                 res = res * 10 + num;
-            } else return -1;
+            }else {
+                return -1;
+            }
         }
         return res;
     }
 
-    private static int binarySearch(int[] nums, int target, int next) {
-        if (next < nums[0]) target--;
-        int l = 0, r = nums.length - 1;
-        while (l <= r) {
-            int m = (l + r) >> 1;
-            if (r - l <= 1) {
-                if (nums[r] <= target) return nums[r];
-                return nums[l];
-            } else if (nums[m] == target) {
-                return nums[m];
-            } else if (nums[m] > target) {
-                r = m - 1;
-            } else {
-                l = m;
+    private static int binarySearch(int[] digits, int target, int next) {
+        if (next < digits[0]) target--;
+        int lid = 0, rid = digits.length;
+        while (lid <= rid) {
+            int mid = (lid + rid) >> 1;
+            if (rid - lid <= 1) {
+                if (digits[rid] <= target) return digits[rid];
+                return digits[lid];
+            } else if (digits[mid] > target) {
+                rid = mid - 1;
+            } else if (digits[mid] < target) {
+                lid = mid;
+            } else if (digits[mid] == target) {
+                return digits[mid];
             }
         }
-        return nums[l];
+        return digits[lid];
     }
+
+
+//    public static int maxN(int[] digits, int n) {
+//        int res = 0;
+//        Arrays.sort(digits);
+//        String s = String.valueOf(n);
+//        boolean less = false;
+//        for (int i = 0; i < s.length(); i++) {
+//            if (less) {
+//                res = res * 10 + digits[digits.length - 1];
+//                continue;
+//            }
+//            int target = s.charAt(i) - '0';
+//            int num = binarySearch(digits, target, i < s.length() - 1 ? s.charAt(i + 1) - '0' : digits[0]);
+//            if (num < target) {
+//                res = res * 10 + num;
+//                less = true;
+//            } else if (num == target) {
+//                res = res * 10 + num;
+//            } else return -1;
+//        }
+//        return res;
+//    }
+//
+//    private static int binarySearch(int[] nums, int target, int next) {
+//        if (next < nums[0]) target--;
+//        int l = 0, r = nums.length - 1;
+//        while (l <= r) {
+//            int m = (l + r) >> 1;
+//            if (r - l <= 1) {
+//                if (nums[r] <= target) return nums[r];
+//                return nums[l];
+//            } else if (nums[m] == target) {
+//                return nums[m];
+//            } else if (nums[m] > target) {
+//                r = m - 1;
+//            } else {
+//                l = m;
+//            }
+//        }
+//        return nums[l];
+//    }
 
     /**
      * 无重复字符的最长子串
@@ -247,16 +291,15 @@ public class Special {
         int p1 = m - 1, p2 = n - 1, p = m + n - 1;
         int cur = 0;
         while (p1 >= 0 || p2 >= 0) {
-            if(p1==-1){
-                nums1[p]=nums2[p2];
+            if (p1 == -1) {
+                nums1[p] = nums2[p2];
                 p2--;
                 p--;
-            }else if(p2==-1){
-                nums1[p]=nums1[p1];
+            } else if (p2 == -1) {
+                nums1[p] = nums1[p1];
                 p1--;
                 p--;
-            }
-            else if (nums1[p1] > nums2[p2]) {
+            } else if (nums1[p1] > nums2[p2]) {
                 nums1[p] = nums1[p1];
                 p--;
                 p1--;

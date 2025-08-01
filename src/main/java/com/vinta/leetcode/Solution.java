@@ -3,6 +3,62 @@ package com.vinta.leetcode;
 import java.util.*;
 
 public class Solution {
+    public int jump(int[] nums) {
+        int len = nums.length;
+        int res = 0;
+        int max = 0, next = 0;
+        for (int i = 0; i < len-1; i++) {
+            next = Math.max(next, i + nums[i]);
+            if (i == max) {
+                max = next;
+                res++;
+            }
+        }
+        return res;
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            map.put(inorder[i], i);
+        }
+        return buildTreeDfs(0, 0, preorder.length - 1, preorder, map);
+    }
+
+    private TreeNode buildTreeDfs(int root, int left, int right, int[] preorder, Map<Integer, Integer> map) {
+        if (left > right)
+            return null;
+        TreeNode node = new TreeNode(preorder[root]);
+        int i = map.get(preorder[root]);
+        node.left = buildTreeDfs(root + 1, left, i - 1, preorder, map);
+        node.right = buildTreeDfs(root + 1 + i - left, i + 1, right, preorder, map);
+        return node;
+    }
+
+    public TreeNode sortedArrayToBST(int[] nums) {
+
+        return null;
+    }
+
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        if (root != null) {
+            queue.offer(root);
+        }
+        while (!queue.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                temp.add(node.val);
+                if (node.left != null) queue.offer(node.left);
+                if (node.right != null) queue.offer(node.right);
+            }
+            ans.add(temp);
+        }
+        return ans;
+    }
 
     public ListNode rotateRight(ListNode head, int k) {
         ListNode fast = head;
@@ -974,11 +1030,11 @@ public class Solution {
             if (nums[m] >= nums[l]) {   // k在右侧: l,m,k,r
                 if (target < nums[m] && target >= nums[l]) { // target在[l, m)之间
                     r = m;
-                } else { // target在[m, r]之间
+                } else { // target在(m, r]之间
                     l = m + 1;
                 }
             } else if (nums[m] <= nums[r]) { // k在m左侧: l,k,m,r
-                if (target >= nums[m] && target <= nums[r]) {  // target在(m, r]之间
+                if (target > nums[m] && target <= nums[r]) {  // target在(m, r]之间
                     l = m + 1;
                 } else {
                     r = m;

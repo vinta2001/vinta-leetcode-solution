@@ -12,9 +12,9 @@ public class Main {
         int k = 5;
         String s = "abba";
         ListNode list1 = SolutionUtils.createListNode(new Integer[]{1, 2, 3, 4, 5});
-        TreeNode treeNode = SolutionUtils.createTreeNode(new Integer[]{3, 1, null, null, 2});
+        TreeNode treeNode = SolutionUtils.createTreeNode(new Integer[]{3, 9, 20, null, null, 15, 7});
         ListNode list3 = SolutionUtils.createListNode(new Integer[]{2, 6});
-        SolutionUtils.printResult(solution.rotateRight(list1, 2));
+        SolutionUtils.printResult(solution.jump(new int[]{2,5,3,2,4,1,0,1}));
 //        SolutionUtils.printResult(treeNode);
     }
 }
